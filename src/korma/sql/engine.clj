@@ -300,7 +300,7 @@
 ;;*****************************************************
 
 (defn sql-set [query]
-  (bind-query {}
+  (bind-query query
               (let [fields (for [[k v] (:set-fields query)] [(utils/generated (field-identifier k)) (utils/generated (str-value v))])
                     clauses (map set= fields)
                     clauses-str (utils/comma clauses)
