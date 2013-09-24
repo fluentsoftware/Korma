@@ -7,9 +7,13 @@
 
 (defdb test-db-opts (postgres {:db "korma" :user "korma" :password "kormapass" :delimiters "" :naming {:fields string/upper-case}}))
 (defdb test-db (postgres {:db "korma" :user "korma" :password "kormapass"}))
+(defdb test-db-mysql (mysql {:db "korma" :user "korma" :password "kormapass"}))
 
 (defentity delims
   (database test-db-opts))
+
+(defentity delims-mysql
+  (database test-db-mysql))
 
 (defentity users)
 (defentity state)
@@ -256,6 +260,11 @@
   (sql-only
     (is (= (select delims)
            "SELECT DELIMS.* FROM DELIMS"))))
+
+(deftest mysql-delim-options
+  (sql-only
+    (is (= (update delims-mysql (set-fields {:field "value"}))
+           "UPDATE `delims-mysql` SET `field` = ?"))))
 
 (deftest false-set-in-update
   (sql-only
