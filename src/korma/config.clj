@@ -1,27 +1,27 @@
 (ns korma.config)
 
-(def options (atom {:delimiters ["\"" "\""]
-                    :naming {:fields identity
-                             :keys identity}}))
+(defonce options (atom {:delimiters ["\"" "\""]
+                        :naming {:fields identity
+                                 :keys identity}
+                        :alias-delimiter " AS "}))
 
-(defn ->delimiters
-  [cs]
+(defn- ->delimiters [cs]
   (if cs
     (let [[begin end] cs
           end (or end begin)]
       [begin end])
     ["\"" "\""]))
 
-(defn ->naming
-  [strategy]
+(defn- ->naming [strategy]
   (merge {:keys identity
           :fields identity}
          strategy))
 
-(defn extract-options
-  [{:keys [naming delimiters]}]
+(defn extract-options [{:keys [naming delimiters subprotocol alias-delimiter]}]
   {:naming (->naming naming)
-   :delimiters (->delimiters delimiters)})
+   :delimiters (->delimiters delimiters)
+   :alias-delimiter (or alias-delimiter " AS ")
+   :subprotocol subprotocol})
 
 (defn set-delimiters
   "Set the global default for field delimiters in connections. Delimiters can either be
@@ -43,4 +43,4 @@
 
 (defn merge-defaults
   [opts]
-  (reset! options opts))
+  (swap! options merge opts))
